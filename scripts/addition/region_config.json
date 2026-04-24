@@ -1,0 +1,42 @@
+{
+  "_comment": "Define Philadelphia regions with latitude and longitude ranges. Adjust these to expand/shrink regions.",
+  "regions": {
+    "Center City": {
+      "description": "Downtown Philadelphia - currently covers Vine to Washington, 5th to 23rd",
+      "lat_range": [39.9381, 39.9783],
+      "lon_range": [-75.1632, -75.1363],
+      "notes": "To expand: increase lat_range (e.g., [39.930, 39.985]) and lon_range (e.g., [-75.175, -75.130])"
+    },
+    "Kensington": {
+      "description": "Northeast Kensington neighborhood",
+      "lat_range": [39.9774, 40.0240],
+      "lon_range": [-75.1364, -75.0788],
+      "notes": "Currently captures central Kensington. Expand for wider coverage."
+    },
+    "North Philadelphia": {
+      "description": "North Philadelphia region",
+      "lat_range": [39.9783, 40.0520],
+      "lon_range": [-75.1889, -75.1000]
+    },
+    "South Philadelphia": {
+      "description": "South Philadelphia region",
+      "lat_range": [39.8670, 39.9381],
+      "lon_range": [-75.1900, -75.1200]
+    },
+    "West Philadelphia": {
+      "description": "West Philadelphia region",
+      "lat_range": [39.9200, 40.0300],
+      "lon_range": [-75.2896, -75.1632]
+    },
+    "Northeast Philadelphia": {
+      "description": "Far Northeast Philadelphia",
+      "lat_range": [40.0240, 40.1425],
+      "lon_range": [-75.0788, -74.9369]
+    }
+  },
+  "full_data_bounds": {
+    "lat_range": [39.8670, 40.1425],
+    "lon_range": [-75.2896, -74.9369],
+    "total_segments": 71393
+  }
+}

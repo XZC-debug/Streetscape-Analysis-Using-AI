@@ -1,0 +1,45 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.15534250023207,
+          39.95444815540704
+        ]
+      },
+      "properties": {
+        "point_id": "pt_000076",
+        "intersection_idx": 19,
+        "arm_direction": 0,
+        "heading": 195,
+        "gsv_pano_id": "j0uh1i0gi2Zfw0-8MsFwcQ",
+        "gsv_date": "2025-05",
+        "num_traffic_lights": 0,
+        "num_stop_signs": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.15404885220926,
+          39.95637625682335
+        ]
+      },
+      "properties": {
+        "point_id": "pt_000102",
+        "intersection_idx": 25,
+        "arm_direction": 180,
+        "heading": 15,
+        "gsv_pano_id": "CAoSFkNJSE0wb2dLRUlDQWdJRGFtZERuU2c.",
+        "gsv_date": "2019-05",
+        "num_traffic_lights": 0,
+        "num_stop_signs": 2
+      }
+    }
+  ]
+}

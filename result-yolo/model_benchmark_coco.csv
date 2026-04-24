@@ -1,0 +1,4 @@
+Class,COCO Class ID,Precision,Recall,F1 Score,AP@50,AP@50-95 (mAP),Model,Dataset,Image Size,Conf Threshold,IoU Threshold
+traffic light,9,0.7248,0.4826,0.5795,0.5685,0.3217,YOLOv8m,COCO val2017,640,0.001,0.6
+stop sign,11,0.8176,0.72,0.7657,0.7949,0.7153,YOLOv8m,COCO val2017,640,0.001,0.6
+ALL CLASSES (overall),-,0.7161,0.6099,-,0.6676,0.5024,YOLOv8m,COCO val2017,640,0.001,0.6
