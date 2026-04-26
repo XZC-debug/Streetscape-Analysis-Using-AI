@@ -158,6 +158,11 @@ function init() {
 }
 
 function populateNeighborhoodSelect() {
+  const allOption = document.createElement("option");
+  allOption.value = "__ALL__";
+  allOption.textContent = "All neighborhoods";
+  elements.select.appendChild(allOption);
+
   Object.keys(neighborhoodConfig).forEach((key) => {
     const option = document.createElement("option");
     option.value = key;
@@ -165,7 +170,7 @@ function populateNeighborhoodSelect() {
     elements.select.appendChild(option);
   });
 
-  elements.select.value = "Center City";
+  elements.select.value = "__ALL__";
 }
 
 function bindControls() {
@@ -179,14 +184,38 @@ function bindControls() {
   elements.toggleStopSigns.addEventListener("change", syncLayerVisibility);
 }
 
+function mergeAllNeighborhoods() {
+  const merged = {
+    sidewalks: { type: "FeatureCollection", features: [] },
+    intersections: { type: "FeatureCollection", features: [] },
+    trafficLights: { type: "FeatureCollection", features: [] },
+    stopSigns: { type: "FeatureCollection", features: [] }
+  };
+  for (const key of Object.keys(bundledData.neighborhoods)) {
+    const nd = bundledData.neighborhoods[key];
+    merged.sidewalks.features.push(...nd.sidewalks.features);
+    merged.intersections.features.push(...nd.intersections.features);
+    merged.trafficLights.features.push(...nd.trafficLights.features);
+    merged.stopSigns.features.push(...nd.stopSigns.features);
+  }
+  return merged;
+}
+
 function loadNeighborhood(neighborhood) {
   if (!map) return;
-  const config = neighborhoodConfig[neighborhood];
-  const neighborhoodData = bundledData.neighborhoods[neighborhood];
-  if (!config || !neighborhoodData) {
-    throw new Error(`No bundled data for neighborhood: ${neighborhood}`);
+
+  let sidewalks, intersections, trafficLights, stopSigns;
+
+  if (neighborhood === "__ALL__") {
+    ({ sidewalks, intersections, trafficLights, stopSigns } = mergeAllNeighborhoods());
+  } else {
+    const config = neighborhoodConfig[neighborhood];
+    const neighborhoodData = bundledData.neighborhoods[neighborhood];
+    if (!config || !neighborhoodData) {
+      throw new Error(`No bundled data for neighborhood: ${neighborhood}`);
+    }
+    ({ sidewalks, intersections, trafficLights, stopSigns } = neighborhoodData);
   }
-  const { sidewalks, intersections, trafficLights, stopSigns } = neighborhoodData;
 
   clearMapLayers();
 
@@ -321,6 +350,19 @@ function clearMapLayers() {
 }
 
 function renderNeighborhoodSummary(neighborhood, intersections, trafficLights, stopSigns) {
+  if (neighborhood === "__ALL__") {
+    const totalImages = metrics.detectionSummary.reduce((sum, row) => sum + Number(row.total_images || 0), 0);
+    elements.summary.innerHTML = `
+      <h3>All neighborhoods</h3>
+      <p>Combined view across all ${Object.keys(neighborhoodConfig).length} deployment neighborhoods.</p>
+      <p><strong>${numberFormatter.format(intersections.features.length)}</strong> detected intersections</p>
+      <p><strong>${numberFormatter.format(trafficLights.features.length)}</strong> traffic-light points</p>
+      <p><strong>${numberFormatter.format(stopSigns.features.length)}</strong> stop-sign points</p>
+      ${totalImages > 0 ? `<p><strong>${numberFormatter.format(totalImages)}</strong> Street View images processed</p>` : ""}
+    `;
+    return;
+  }
+
   const summaryRow = metrics.detectionSummary.find((row) => row.neighborhood === neighborhood);
   const metricRow = metrics.detectionMetrics.find((row) => row.Neighborhood === neighborhood);
 
