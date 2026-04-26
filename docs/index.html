@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Streetscape Analysis Using AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  >
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">MUSA Practicum Spring 2026</p>
+        <h1>Crossing conditions deserve their own map.</h1>
+        <p class="hero-text">
+          We built a city-scale screening workflow that combines aerial imagery, Street View, and computer vision
+          to surface crosswalks, crossing widths, and traffic controls across Philadelphia.
+        </p>
+        <div class="hero-actions">
+          <a href="#explorer" class="button button-primary">Explore the map</a>
+          <a href="#story" class="button button-secondary">Read the story</a>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <div class="hero-stat">
+          <span class="hero-stat-value" data-stat="streetImages">9,950</span>
+          <span class="hero-stat-label">street-view images processed</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value" data-stat="trafficDetections">3,745</span>
+          <span class="hero-stat-label">traffic-control detections</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value" data-stat="crosswalkPolygons">3,610</span>
+          <span class="hero-stat-label">crosswalk polygons generated</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="story-grid" id="story">
+        <article class="story-card story-lead">
+          <p class="section-tag">Why this matters</p>
+          <h2>Walk Score stops at the curb.</h2>
+          <p>
+            The project starts with a simple planning problem: destination access is only half the story. If the
+            crossing is missing, faded, wide, or uncontrolled, the route is not truly walkable even when the
+            neighborhood scores high.
+          </p>
+        </article>
+        <article class="story-card">
+          <p class="section-tag">The gap</p>
+          <h3>Existing pedestrian datasets miss crossing-level detail.</h3>
+          <p>
+            Cities usually have either coarse GIS inventories that age out quickly, or expensive field surveys tied
+            to individual projects. There is very little in between.
+          </p>
+        </article>
+        <article class="story-card">
+          <p class="section-tag">Our move</p>
+          <h3>A repeatable screening layer.</h3>
+          <p>
+            This workflow uses PASDA aerial imagery and Google Street View to generate usable planning layers that
+            can be refreshed as imagery is updated.
+          </p>
+        </article>
+      </section>
+
+      <section class="pipeline-section">
+        <div class="section-heading">
+          <p class="section-tag">Method</p>
+          <h2>Two computer vision pipelines, one planning interface.</h2>
+        </div>
+        <div class="pipeline-grid">
+          <article class="pipeline-card">
+            <span class="pipeline-label">Street View</span>
+            <h3>YOLO detection</h3>
+            <p>Fine-tuned object detection extracts stop signs and traffic lights from intersection-facing imagery.</p>
+            <ul class="pipeline-points">
+              <li>Stop-sign F1: <strong>0.77</strong></li>
+              <li>Traffic-light F1: <strong>0.58</strong></li>
+              <li>Neighborhood-level deployment outputs in GeoJSON and CSV</li>
+            </ul>
+          </article>
+          <article class="pipeline-card">
+            <span class="pipeline-label">Aerial imagery</span>
+            <h3>U-Net segmentation</h3>
+            <p>Crosswalk markings are segmented from 15 cm/pixel aerial imagery to produce polygon outputs at scale.</p>
+            <ul class="pipeline-points">
+              <li>Crosswalk F1: <strong>0.94</strong></li>
+              <li>Precision: <strong>0.93</strong> / Recall: <strong>0.95</strong></li>
+              <li>Deployable across multiple Philadelphia study areas</li>
+            </ul>
+          </article>
+          <article class="pipeline-card">
+            <span class="pipeline-label">Crossing width</span>
+            <h3>Approach-level measurement</h3>
+            <p>Perpendicular transects estimate curb-to-curb crossing width to create a screening metric planners can use.</p>
+            <ul class="pipeline-points">
+              <li>Intersection-approach estimates in baseline CSV outputs</li>
+              <li>Median width plus spread from sampled transects</li>
+              <li>Designed for prioritization, not engineering survey replacement</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="explorer-section" id="explorer">
+        <div class="section-heading">
+          <p class="section-tag">Explorer</p>
+          <h2>Browse the detection layers by neighborhood.</h2>
+          <p>
+            Click an intersection or traffic-control point to inspect attributes and jump into Google Street View for
+            visual verification.
+          </p>
+        </div>
+
+        <div class="explorer-layout">
+          <aside class="control-panel">
+            <div class="control-group">
+              <label for="neighborhood-select">Neighborhood</label>
+              <select id="neighborhood-select"></select>
+            </div>
+
+            <div class="control-group">
+              <span>Layers</span>
+              <label class="toggle">
+                <input type="checkbox" id="toggle-sidewalks" checked>
+                <span>Regional sidewalks</span>
+              </label>
+              <label class="toggle">
+                <input type="checkbox" id="toggle-intersections" checked>
+                <span>Detected intersections</span>
+              </label>
+              <label class="toggle">
+                <input type="checkbox" id="toggle-traffic" checked>
+                <span>Traffic lights</span>
+              </label>
+              <label class="toggle">
+                <input type="checkbox" id="toggle-stop-signs" checked>
+                <span>Stop signs</span>
+              </label>
+            </div>
+
+            <div class="mini-summary" id="neighborhood-summary">
+              <h3>Neighborhood snapshot</h3>
+              <p>Select a neighborhood to load its Street View detections and matching sidewalk context.</p>
+            </div>
+
+            <div class="legend">
+              <div><span class="swatch swatch-sidewalk"></span>Sidewalk centerlines</div>
+              <div><span class="swatch swatch-intersection"></span>Detected intersections</div>
+              <div><span class="swatch swatch-traffic"></span>Traffic lights</div>
+              <div><span class="swatch swatch-stop"></span>Stop signs</div>
+            </div>
+          </aside>
+
+          <div class="map-panel">
+            <div id="map" aria-label="Philadelphia results map"></div>
+            <aside class="feature-panel" id="feature-panel">
+              <p class="feature-panel-tag">Selection</p>
+              <h3>Map feature details</h3>
+              <p>Click a point on the map to inspect model outputs, location details, and Street View links.</p>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="metrics-section">
+        <div class="section-heading">
+          <p class="section-tag">Results</p>
+          <h2>Deployment scale, model fit, and screening value.</h2>
+        </div>
+
+        <div class="metrics-grid">
+          <article class="metric-card">
+            <h3>Detection coverage by neighborhood</h3>
+            <div id="coverage-chart" class="bar-chart"></div>
+          </article>
+          <article class="metric-card">
+            <h3>Crossing-width distribution</h3>
+            <div class="width-summary" id="width-summary"></div>
+          </article>
+          <article class="metric-card">
+            <h3>Training curve snapshot</h3>
+            <div id="training-history" class="history-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="deliverables-section">
+        <div class="section-heading">
+          <p class="section-tag">What planners get</p>
+          <h2>Outputs designed for GIS workflows, not just a demo.</h2>
+        </div>
+        <div class="deliverables-grid">
+          <article>
+            <h3>Traffic-control point layers</h3>
+            <p>Neighborhood-level GeoJSON outputs for stop signs and traffic lights extracted from Street View.</p>
+          </article>
+          <article>
+            <h3>Intersection screening locations</h3>
+            <p>Detected intersections and Street View sampling points that support inspection and validation.</p>
+          </article>
+          <article>
+            <h3>Crossing-width attributes</h3>
+            <p>Approach-level baseline measurements suitable for flagging wide or high-variance crossings.</p>
+          </article>
+          <article>
+            <h3>Crosswalk segmentation outputs</h3>
+            <p>Polygon layers produced from aerial imagery to support future citywide condition monitoring.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="limits-section">
+        <div class="section-heading">
+          <p class="section-tag">Limits and next steps</p>
+          <h2>This is a screening system, not a final audit.</h2>
+        </div>
+        <div class="limits-grid">
+          <article>
+            <h3>Current limits</h3>
+            <p>Pilot-area training data, no citywide ground-truth audit yet, and lower recall for traffic lights in complex scenes.</p>
+          </article>
+          <article>
+            <h3>Next steps</h3>
+            <p>Expand validation, connect outputs to crash and accessibility datasets, and extend the workflow to more cities and street types.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script src="./data-bundle.js"></script>
+  <script src="./app.js" type="module"></script>
+</body>
+</html>

@@ -10,7 +10,7 @@ This project develops a scalable, image-based pipeline for extracting pedestrian
 
 ## Project Website
 
-The project website source lives in [site/index.html](./site/index.html) and is deployed to GitHub Pages through [deploy-pages.yml](./.github/workflows/deploy-pages.yml).
+The project website is published from [docs/index.html](./docs/index.html) using GitHub Pages on the `main` branch with the `/docs` folder source.
 
 
 ## Motivation: Crosswalks as a Dimension of Urban Walkability
