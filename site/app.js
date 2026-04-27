@@ -217,6 +217,9 @@ function loadNeighborhood(neighborhood) {
     ({ sidewalks, intersections, trafficLights, stopSigns } = neighborhoodData);
   }
 
+  const isAll = neighborhood === "__ALL__";
+  const r = isAll ? 3 : 6;
+
   clearMapLayers();
 
   layerState.sidewalks = L.geoJSON(sidewalks, {
@@ -229,11 +232,11 @@ function loadNeighborhood(neighborhood) {
 
   layerState.intersections = L.geoJSON(intersections, {
     pointToLayer: (_, latlng) => L.circleMarker(latlng, {
-      radius: 6,
+      radius: r,
       fillColor: "#0f1720",
       fillOpacity: 0.8,
       color: "#fffdf7",
-      weight: 1.5
+      weight: isAll ? 0.5 : 1.5
     }),
     onEachFeature: (feature, layer) => {
       layer.on("click", () => renderFeaturePanel({
@@ -251,11 +254,11 @@ function loadNeighborhood(neighborhood) {
 
   layerState.trafficLights = L.geoJSON(trafficLights, {
     pointToLayer: (_, latlng) => L.circleMarker(latlng, {
-      radius: 7,
+      radius: isAll ? 3 : 7,
       fillColor: "#ffb347",
       fillOpacity: 0.92,
       color: "#5a3c06",
-      weight: 1.3
+      weight: isAll ? 0.5 : 1.3
     }),
     onEachFeature: (feature, layer) => {
       const props = feature.properties;
@@ -278,11 +281,11 @@ function loadNeighborhood(neighborhood) {
 
   layerState.stopSigns = L.geoJSON(stopSigns, {
     pointToLayer: (_, latlng) => L.circleMarker(latlng, {
-      radius: 7,
+      radius: isAll ? 3 : 7,
       fillColor: "#d95d39",
       fillOpacity: 0.94,
       color: "#fff1ed",
-      weight: 1.3
+      weight: isAll ? 0.5 : 1.3
     }),
     onEachFeature: (feature, layer) => {
       const props = feature.properties;
